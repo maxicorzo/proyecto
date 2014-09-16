@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+from PyQt4 import QtCore, QtGui, Qt
+from PyQt4.uic import *
+from time import strftime
+import ConfigParser
+import time
+
+class Myform(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        locale=unicode(QtCore.QLocale.system().name())
+        QtGui.QWidget.__init__(self, parent)
+        self.ui=loadUi("llego.ui",self) 
+        self.lblReloj=self.ui.label_3
+        self.config=ConfigParser.ConfigParser()        
+        self.i=0        
+        self.mostrarHora()
+        self.foo=-1
+
+    def mostrarHora(self):
+        self.lblReloj.setText(time.strftime("%x, %X"))
+        QtCore.QTimer.singleShot(1000, self.mostrarHora)      
+
+    def mostrarMensaje(self):        
+        QtGui.QMessageBox.information(self,'Test', 'Testing...')
+
+    def llego(self):
+        self.nombre=self.ui.comboBox.currentText()        
+        self.i+=1
+           
+        try:           
+                self.config.set(str(self.nombre),'llego '+strftime('%x')+str(cont),strftime('%X'))
+        except:
+            QtGui.QMessageBox.information(self,'Mensaje de sistema',"no hace el try")
+     
+            self.config.add_section(str(self.nombre))
+            cont=0
+            self.config.set(str(self.nombre),'llego '+strftime('%x')+str(cont),strftime('%X'))
+                                                                                           
+
+        with open('nuevo.ini','a+r') as f:        
+            self.config.write(f)
+            self.foo=1
+
+        QtGui.QMessageBox.information(self,'Mensaje de sistema',"continue a su labor")
+
+
+    def salio(self):
+        self.nombre=self.ui.comboBox.currentText()        
+        
+           
+        try:           
+                self.config.set(str(self.nombre),'salio',self.lblReloj.text())
+        except:
+            QtGui.QMessageBox.information(self,'Mensaje de sistema',"no hace el try ")                
+            self.config.add_section(str(self.nombre))
+            cont=0
+            self.config.set(str(self.nombre),'salio '+strftime('%x')+str(cont),strftime('%X'))
+                                                                                              
+                                                                                                
+        with open('nuevo.ini','a+r') as f:
+            self.config.write(f)
+            self.foo=1   
+        
+        QtGui.QMessageBox.information(self,'Mensaje de sistema',"Adios, Hasta luego")
+
+if __name__=="__main__":
+    app=QtGui.QApplication(sys.argv)
+    myapp = Myform()
+    myapp.show()
+    sys.exit(app.exec_())
